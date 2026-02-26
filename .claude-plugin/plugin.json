@@ -1,6 +1,6 @@
 {
   "name": "gsdu",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "GSD Autopilot — auto-pilot remaining GSD phases (plan, execute, audit, gap closure)",
   "author": {
     "name": "minhoyoo-iotrust",
