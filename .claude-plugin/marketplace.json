@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "gsdu",
-      "source": ".",
+      "source": "./",
       "description": "GSD Autopilot — auto-pilot remaining GSD phases (plan, execute, audit, gap closure)"
     }
   ]
