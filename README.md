@@ -30,12 +30,18 @@ After your milestone roadmap is created, run a single command to automatically p
 
 ### Option 1: Plugin (recommended)
 
-```bash
-# Test locally
-claude --plugin-dir /path/to/gsdu
+In Claude Code:
 
-# Or install via marketplace (after adding marketplace)
-/plugin install gsdu@your-marketplace
+```bash
+# Add marketplace and install
+/plugin marketplace add minhoyoo-iotrust/gsdu
+/plugin install gsdu
+```
+
+For local development:
+
+```bash
+claude --plugin-dir /path/to/gsdu
 ```
 
 ### Option 2: Local skill (per project)
