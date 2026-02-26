@@ -1,0 +1,14 @@
+{
+  "name": "gsdu",
+  "owner": {
+    "name": "minhoyoo-iotrust",
+    "url": "https://github.com/minhoyoo-iotrust"
+  },
+  "plugins": [
+    {
+      "name": "gsdu",
+      "source": ".",
+      "description": "GSD Autopilot — auto-pilot remaining GSD phases (plan, execute, audit, gap closure)"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # gsdu — GSD Autopilot Plugin
 
-A Claude Code plugin that auto-pilots [GSD (Get Shit Done)](https://github.com/get-shit-done/gsd) milestone workflows.
+A Claude Code plugin that auto-pilots [GSD (Get Shit Done)](https://github.com/gsd-build/get-shit-done) milestone workflows.
 
 After your milestone roadmap is created, run a single command to automatically plan, execute, verify, and audit all remaining phases.
 
@@ -23,7 +23,7 @@ After your milestone roadmap is created, run a single command to automatically p
 ## Prerequisites
 
 - [Claude Code](https://claude.com/claude-code) installed
-- [GSD](https://github.com/get-shit-done/gsd) installed (`~/.claude/get-shit-done/`)
+- [GSD](https://github.com/gsd-build/get-shit-done) installed (`~/.claude/get-shit-done/`)
 - An active milestone with a roadmap (`.planning/ROADMAP.md`)
 
 ## Installation

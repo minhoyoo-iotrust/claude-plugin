@@ -25,7 +25,7 @@ test -f "$HOME/.claude/get-shit-done/bin/gsd-tools.cjs" || echo "GSD_NOT_FOUND"
 If `GSD_NOT_FOUND`:
 ```
 GSD is not installed. Install it first:
-  https://github.com/get-shit-done/gsd
+  https://github.com/gsd-build/get-shit-done
 
 Then run /gsdu:autopilot again.
 ```
