@@ -2,7 +2,7 @@
 name: autopilot
 description: Auto-pilot remaining GSD phases — plan, execute, audit, gap closure. Requires GSD to be installed.
 argument-hint: "[start-phase] [--dry-run]"
-disable-model-invocation: true
+disable-model-invocation: false
 allowed-tools:
   - Read
   - Write
