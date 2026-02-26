@@ -32,17 +32,21 @@ After your milestone roadmap is created, run a single command to automatically p
 
 In Claude Code:
 
-```bash
-# Add marketplace and install
+```
+# 1. Add marketplace
 /plugin marketplace add minhoyoo-iotrust/gsdu
+
+# 2. Install plugin
 /plugin install gsdu
 ```
 
-For local development:
+To load the plugin from a local directory (useful for development/testing without publishing):
 
 ```bash
 claude --plugin-dir /path/to/gsdu
 ```
+
+This starts Claude Code with the plugin loaded directly from disk, so you can edit and test without pushing to the marketplace.
 
 ### Option 2: Local skill (per project)
 
