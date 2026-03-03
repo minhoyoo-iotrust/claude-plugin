@@ -2,7 +2,7 @@
 name: autopilot
 description: Auto-pilot remaining GSD phases — plan, execute, audit, gap closure. Use when user asks to run autopilot, auto-execute remaining phases, complete all GSD phases automatically, or run the full milestone workflow end-to-end. Also use when user says "autopilot", "auto-pilot", "run all phases", or "execute remaining phases". Requires GSD to be installed at ~/.claude/get-shit-done/.
 argument-hint: "[start-phase] [--dry-run]"
-disable-model-invocation: false
+disable-model-invocation: true
 allowed-tools:
   - Read
   - Write
