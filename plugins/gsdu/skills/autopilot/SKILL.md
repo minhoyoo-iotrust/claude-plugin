@@ -14,6 +14,11 @@ allowed-tools:
   - AskUserQuestion
 ---
 
+NOTE: This file is kept for reference only. The actual entry point is
+plugins/gsdu/commands/autopilot.md, which contains the full inlined workflow.
+The relative @WORKFLOW.md reference below does NOT resolve when loaded via
+the Skill tool for plugin-based skills, which caused an infinite loop.
+
 <objective>
 Automatically execute all remaining phases in the current GSD milestone.
 
