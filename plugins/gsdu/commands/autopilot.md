@@ -22,7 +22,7 @@ Orchestrator stays lean (~15% context). Each phase plan/execute is delegated to 
 
 **Prerequisites:**
 - GSD must be installed (`~/.claude/get-shit-done/` exists)
-- A milestone roadmap must exist (`.planning/ROADMAP.md`)
+- A milestone roadmap must exist (detected via `gsd-tools.cjs init progress` — supports both standard and workstream layouts)
 - At least one phase must be unfinished
 </arguments>
 
@@ -61,13 +61,21 @@ Then run /gsdu:autopilot again.
 Exit.
 
 ```bash
-# 2. Check planning structure exists
-test -f .planning/ROADMAP.md || echo "NO_ROADMAP"
+# 2. Load context and detect paths (supports both standard and workstream layouts)
+INIT=$(node $HOME/.claude/get-shit-done/bin/gsd-tools.cjs init progress)
 ```
 
-If `NO_ROADMAP`:
+Extract path variables from INIT JSON — these adapt automatically to workstream mode:
+- `ROADMAP_PATH` ← `roadmap_path` (e.g., `.planning/ROADMAP.md` or `.planning/workstreams/{name}/ROADMAP.md`)
+- `STATE_PATH` ← `state_path` (e.g., `.planning/STATE.md` or `.planning/workstreams/{name}/STATE.md`)
+- `CONFIG_PATH` ← `config_path` (e.g., `.planning/config.json` or `.planning/workstreams/{name}/config.json`)
+- `PLANNING_DIR` ← parent directory of `ROADMAP_PATH` (e.g., `.planning/` or `.planning/workstreams/{name}/`)
+- `PHASES_DIR` ← `{PLANNING_DIR}/phases/`
+- `ROADMAP_EXISTS` ← `roadmap_exists`
+
+If `ROADMAP_EXISTS` is false:
 ```
-No milestone roadmap found (.planning/ROADMAP.md missing).
+No milestone roadmap found.
 
 Start a new milestone first:
   /gsd:new-project   — for new projects
@@ -76,12 +84,11 @@ Start a new milestone first:
 Exit.
 
 ```bash
-# 3. Load full context
-INIT=$(node $HOME/.claude/get-shit-done/bin/gsd-tools.cjs init progress)
+# 3. Analyze roadmap for phase details
 ROADMAP=$(node $HOME/.claude/get-shit-done/bin/gsd-tools.cjs roadmap analyze)
 ```
 
-Extract from ROADMAP JSON:
+Extract from INIT and ROADMAP JSON:
 - `phases[]` — all phases with `number`, `name`, `goal`, `disk_status`, `plan_count`, `summary_count`
 - `milestone_version`
 - `completed_count`, `phase_count`
@@ -176,10 +183,10 @@ Agent(
     </context>
 
     <files_to_read>
-    - .planning/ROADMAP.md
-    - .planning/STATE.md
+    - {ROADMAP_PATH}
+    - {STATE_PATH}
     - .planning/REQUIREMENTS.md
-    - .planning/config.json (if exists)
+    - {CONFIG_PATH} (if exists)
     - ./CLAUDE.md (if exists)
     </files_to_read>
 
@@ -194,7 +201,7 @@ Agent(
 
 After plan-phase completes, verify plans were created:
 ```bash
-ls .planning/phases/*{N}*/*-PLAN.md 2>/dev/null | wc -l
+ls {PHASES_DIR}/*{N}*/*-PLAN.md 2>/dev/null | wc -l
 ```
 
 If 0 plans created: report error, stop autopilot.
@@ -229,9 +236,9 @@ Agent(
     </context>
 
     <files_to_read>
-    - .planning/STATE.md
-    - .planning/ROADMAP.md
-    - .planning/config.json (if exists)
+    - {STATE_PATH}
+    - {ROADMAP_PATH}
+    - {CONFIG_PATH} (if exists)
     - ./CLAUDE.md (if exists)
     </files_to_read>
 
@@ -248,7 +255,7 @@ Agent(
 **2c. Check verification result:**
 
 ```bash
-VERIFY_STATUS=$(grep "^status:" .planning/phases/*{N}*/*-VERIFICATION.md 2>/dev/null | tail -1 | cut -d: -f2 | tr -d ' ')
+VERIFY_STATUS=$(grep "^status:" {PHASES_DIR}/*{N}*/*-VERIFICATION.md 2>/dev/null | tail -1 | cut -d: -f2 | tr -d ' ')
 ```
 
 | Status | Action |
@@ -283,7 +290,7 @@ for gap_iteration in 1..MAX_GAP_ITERATIONS:
 
 ```bash
 COMPLETION=$(node $HOME/.claude/get-shit-done/bin/gsd-tools.cjs phase complete {N})
-node $HOME/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs(phase-{N}): complete phase execution" --files .planning/ROADMAP.md .planning/STATE.md .planning/REQUIREMENTS.md
+node $HOME/.claude/get-shit-done/bin/gsd-tools.cjs commit "docs(phase-{N}): complete phase execution" --files {ROADMAP_PATH} {STATE_PATH} .planning/REQUIREMENTS.md
 ```
 
 ```
@@ -322,10 +329,10 @@ Agent(
     </execution_context>
 
     <files_to_read>
-    - .planning/ROADMAP.md
+    - {ROADMAP_PATH}
     - .planning/REQUIREMENTS.md
-    - .planning/STATE.md
-    - All SUMMARY.md and VERIFICATION.md files in .planning/phases/
+    - {STATE_PATH}
+    - All SUMMARY.md and VERIFICATION.md files in {PHASES_DIR}
     </files_to_read>
 
     <process>
@@ -339,7 +346,7 @@ Agent(
 **Check audit result:**
 
 ```bash
-AUDIT_STATUS=$(grep "^status:" .planning/v*-MILESTONE-AUDIT.md 2>/dev/null | tail -1 | cut -d: -f2 | tr -d ' ')
+AUDIT_STATUS=$(grep "^status:" {PLANNING_DIR}/v*-MILESTONE-AUDIT.md 2>/dev/null | tail -1 | cut -d: -f2 | tr -d ' ')
 ```
 
 | Status | Action |
