@@ -1,12 +1,12 @@
 {
   "name": "gsdu",
-  "version": "0.3.0",
-  "description": "GSD Autopilot — auto-pilot remaining GSD phases (plan, execute, audit, gap closure)",
+  "version": "0.3.1",
+  "description": "GSD Utilities — autopilot for phases + milestone runner for sequential objective execution",
   "author": {
     "name": "minhoyoo-iotrust",
     "url": "https://github.com/minhoyoo-iotrust"
   },
   "repository": "https://github.com/minhoyoo-iotrust/claude-plugin",
   "license": "MIT",
-  "keywords": ["gsd", "autopilot", "milestone", "workflow", "automation"]
+  "keywords": ["gsd", "autopilot", "milestone", "workflow", "automation", "runner", "objectives", "batch"]
 }
