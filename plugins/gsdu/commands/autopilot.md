@@ -1,6 +1,6 @@
 ---
 description: Auto-pilot remaining GSD phases (plan, execute, audit, gap closure)
-argument-hint: "[start-phase] [--dry-run] [--executor gsd|superpowers]"
+argument-hint: "[start-phase] [--dry-run]"
 allowed-tools: Read, Write, Edit, Glob, Grep, Bash, Agent, AskUserQuestion
 ---
 
@@ -19,15 +19,11 @@ Orchestrator stays lean (~15% context). Each phase plan/execute is delegated to 
 - `$ARGUMENTS` — optional start phase number and flags
 - `start-phase` — Phase number to start from (default: first incomplete phase)
 - `--dry-run` — Show execution plan without running anything
-- `--executor gsd|superpowers` — Execution engine selection (default: `gsd`)
-  - `gsd` — GSD gsd-executor agent (current default behavior)
-  - `superpowers` — superpowers plugin executing-plans protocol. Requires `superpowers` plugin installed.
 
 **Prerequisites:**
 - GSD must be installed (`~/.claude/get-shit-done/` exists)
 - A milestone roadmap must exist (detected via `gsd-tools.cjs init progress` — supports both standard and workstream layouts)
 - At least one phase must be unfinished
-- If `--executor superpowers`: superpowers plugin must be installed
 </arguments>
 
 <constraints>
@@ -61,23 +57,6 @@ GSD is not installed. Install it first:
   https://github.com/gsd-build/get-shit-done
 
 Then run /gsdu:autopilot again.
-```
-Exit.
-
-```bash
-# 1b. If --executor superpowers, check plugin is installed
-if [ "$EXECUTOR" = "superpowers" ]; then
-  SUPERPOWERS_INSTALLED=$(find .claude/plugins -name "executing-plans*" -o -name "superpowers" -type d 2>/dev/null | head -1)
-  test -n "$SUPERPOWERS_INSTALLED" && echo "SUPERPOWERS_OK" || echo "SUPERPOWERS_NOT_FOUND"
-fi
-```
-
-If `SUPERPOWERS_NOT_FOUND`:
-```
-superpowers plugin is not installed but --executor superpowers was requested.
-
-Install:  /plugin install superpowers@claude-plugins-official
-Or:       run without --executor flag (defaults to GSD executor)
 ```
 Exit.
 
@@ -135,7 +114,6 @@ Exit.
 
 **Milestone:** v{milestone_version}
 **Progress:** {completed_count}/{phase_count} phases complete
-**Executor:** {executor} {if superpowers: "(superpowers plugin)"}
 
 ### Phases to Execute
 
@@ -235,87 +213,6 @@ Phase {N}: {plan_count} plan(s) already exist, skipping planning.
 ```
 
 **2b. Execute phase:**
-
-**If `--executor superpowers`:**
-
-First, collect all PLAN.md files for this phase and convert to superpowers format:
-
-```bash
-PLAN_FILES=$(ls {PHASES_DIR}/*{N}*/*-PLAN.md 2>/dev/null | sort)
-```
-
-For each PLAN.md, the agent reads the GSD `<tasks>` XML and converts to superpowers checklist format:
-- `<task>` → `## Task: {name}`
-- `<files>` → `- Files: {paths}`
-- `<action>` steps → `- [ ] Step N: {action}`
-- `<verify>` → `- [ ] Verify: {command}`
-- Commit instruction after each task
-
-Then execute via a general-purpose agent that follows the superpowers protocol:
-
-```
-Agent(
-  description="Execute phase {N} via superpowers",
-  prompt="
-    <objective>
-    Execute all plans in Phase {N}: {phase_name} using the superpowers executing-plans protocol.
-    Goal: {goal}
-    </objective>
-
-    <context>
-    You are executing GSD phase plans using the superpowers execution protocol.
-    Phase: {N}
-    Auto-mode: true (no user confirmations needed for non-checkpoint tasks)
-    </context>
-
-    <files_to_read>
-    - {STATE_PATH}
-    - {ROADMAP_PATH}
-    - {CONFIG_PATH} (if exists)
-    - ./CLAUDE.md (if exists)
-    - All PLAN.md files: {PLAN_FILES}
-    </files_to_read>
-
-    <process>
-    For each PLAN.md file in this phase:
-
-    1. READ the PLAN.md — parse all <task> elements (name, files, action, verify, done).
-
-    2. CONVERT to superpowers checklist format in memory (do NOT write a separate plan file):
-       - Each <task> becomes a headed section with checkbox steps
-       - Each <action> line becomes a '- [ ]' step
-       - Each <verify> becomes a verification step
-
-    3. EXECUTE following the superpowers protocol:
-       - For each task: announce → execute steps → run verify → commit atomically
-       - Stage only task-specific files (NEVER git add . or -A)
-       - Commit format: '{type}({phase}-{plan}): {description}'
-       - On blocker or test failure: STOP and report (do not guess or skip)
-       - If task has type='checkpoint:human-action': STOP immediately and return checkpoint
-
-    4. After all tasks in a plan complete, CREATE SUMMARY.md at the plan directory:
-       {PHASES_DIR}/{phase_dir}/{phase}-{plan}-SUMMARY.md
-
-       Include YAML frontmatter:
-       ---
-       phase: {N}-{phase_name}
-       plan: {plan_number}
-       key-files: [list of created/modified files]
-       key-decisions: [any decisions made during execution]
-       completed: {YYYY-MM-DD}
-       ---
-
-       Body: brief summary of what was built and verified.
-
-    5. UPDATE GSD state after each plan:
-       node $HOME/.claude/get-shit-done/bin/gsd-tools.cjs state advance-plan
-       node $HOME/.claude/get-shit-done/bin/gsd-tools.cjs state update-progress
-    </process>
-  "
-)
-```
-
-**Else (default `--executor gsd`):**
 
 ```
 Agent(
