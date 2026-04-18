@@ -1,6 +1,6 @@
 {
   "name": "gsdu",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "GSD Utilities — autopilot for phases + milestone runner for sequential objective execution",
   "author": {
     "name": "minhoyoo-iotrust",
